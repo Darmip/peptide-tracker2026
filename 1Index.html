@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2f6b4f">
+<title>Peptide Tracker</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;700&display=swap">
+<style>
+:root{--bg:#f4f4ea;--card:#fcfcf6;--ink:#1d2a22;--mut:#586a5f;--g:#2f6b4f;--gt:#fff;--g2:#e1eee5;--ln:#dcdfd0;--wn:#9a3b2b;--wb:#fbe8e2;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111815;--card:#192119;--ink:#e8efe9;--mut:#9db0a4;--g:#6fc29a;--gt:#0f2118;--g2:#223329;--ln:#2a362e;--wn:#f0907a;--wb:#3a2119;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#111815;--card:#192119;--ink:#e8efe9;--mut:#9db0a4;--g:#6fc29a;--gt:#0f2118;--g2:#223329;--ln:#2a362e;--wn:#f0907a;--wb:#3a2119;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:88px}
+h1,h2,h3{font-family:Fraunces,Georgia,serif;line-height:1.2;margin:0 0 .5rem}
+h1{font-size:1.9rem;font-weight:700}h2{font-size:1.3rem}h3{font-size:1.05rem}
+.top{display:flex;align-items:center;gap:.6rem;padding:14px 18px;max-width:640px;margin:0 auto}
+.top b{font-family:Fraunces,Georgia,serif;font-size:1.15rem}
+main{max-width:640px;margin:0 auto;padding:0 16px}
+.card{background:var(--card);border:1px solid var(--ln);border-radius:14px;padding:16px;margin:0 0 14px}
+.hero{padding:22px 4px 10px}.hero p{color:var(--mut);max-width:34em}
+.mut{color:var(--mut);font-size:.9rem}
+.btn{background:var(--g);color:var(--gt);border:0;border-radius:10px;padding:12px 18px;font:600 1rem inherit;font-family:inherit;cursor:pointer}
+.ghost{background:none;border:1px solid var(--ln);color:var(--ink);border-radius:8px;padding:6px 10px;font:inherit;font-size:.85rem;cursor:pointer;white-space:nowrap}
+.ghost.warn{color:var(--wn);border-color:var(--wn)}
+label{display:block;font-weight:600;font-size:.9rem;margin:12px 0 4px}
+input,select,textarea{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--ln);border-radius:9px;padding:10px}
+input:focus,select:focus,textarea:focus,button:focus-visible,summary:focus-visible{outline:2px solid var(--g);outline-offset:2px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips label{margin:0;font-weight:500}
+.chips input{position:absolute;opacity:0;width:0}
+.chips span{display:inline-block;border:1px solid var(--ln);border-radius:99px;padding:6px 12px;font-size:.9rem;cursor:pointer;background:var(--bg)}
+.chips input:checked+span{background:var(--g);color:var(--gt);border-color:var(--g)}
+.chips input:focus-visible+span{outline:2px solid var(--g);outline-offset:2px}
+.row{display:flex;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid var(--ln)}
+.row:last-child{border:0}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.stats div{background:var(--card);border:1px solid var(--ln);border-radius:12px;padding:12px}
+.stats b{display:block;font-family:Fraunces,Georgia,serif;font-size:1.35rem}
+.due{display:flex;justify-content:space-between;padding:8px 0}
+.pill{background:var(--g2);color:var(--g);border-radius:99px;padding:2px 10px;font-size:.85rem;font-weight:600}
+.pill.late{background:var(--wb);color:var(--wn)}
+.bar{height:10px;background:var(--g);border-radius:5px;min-width:4px}
+.bars{display:grid;grid-template-columns:130px 1fr 24px;gap:8px;align-items:center;font-size:.9rem;margin:6px 0}
+.mood{display:flex;align-items:flex-end;gap:4px;height:70px}
+.mood i{flex:1;background:var(--g);border-radius:3px 3px 0 0;opacity:.85}
+details{border-top:1px solid var(--ln);padding:10px 0}
+summary{font-weight:600;cursor:pointer}
+details ul{margin:.5rem 0 0;padding-left:1.2rem}
+.alert{background:var(--wb);border-radius:12px;padding:14px;margin-bottom:14px}
+.alert h3{color:var(--wn)}
+textarea{min-height:90px;font-size:.8rem}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--ln);display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom,0px)}
+nav div{display:flex;width:100%;max-width:640px}
+nav button{flex:1;background:none;border:0;color:var(--mut);font:inherit;font-size:.75rem;padding:8px 0 10px;cursor:pointer}
+nav button[aria-current]{color:var(--g);font-weight:700}
+nav svg{display:block;margin:0 auto 2px}
+.fine{font-size:.8rem;color:var(--mut);margin:18px 0}
+</style></head>
+<body>
+<header class="top"><svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#2f6b4f"/><path d="M16 6c4 5 6 8 6 11a6 6 0 0 1-12 0c0-3 2-6 6-11z" fill="#e1eee5"/><path d="M16 14v9M12.5 18.5L16 22l3.500-3.500" stroke="#2f6b4f" stroke-width="1.800" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><b>Peptide Tracker</b></header>
+<main id="app"></main>
+<nav><div id="nav"></div></nav>
+<script>
+const $=s=>document.querySelector(s),mem={};
+const st={get(k){try{return localStorage.getItem(k)}catch(e){return mem[k]||null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){mem[k]=v}}};
+let D;try{D=JSON.parse(st.get('pt1')||'')}catch(e){}
+D=D&&Array.isArray(D.entries)?D:{entries:[],unit:'kg'};
+const save=()=>st.set('pt1',JSON.stringify(D));
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const TABS=[['home','Home','M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z'],['log','Log','M12 5v14M5 12h14'],['trends','Trends','M4 19V5M4 19h16M8 15l4-5 3 3 4-6'],['learn','Learn','M4 5h6a2 2 0 0 1 2 2v12a2 2 0 0 0-2-2H4zM20 5h-6a2 2 0 0 0-2 2v12a2 2 0 0 1 2-2h6z'],['more','More','M5 12h.01M12 12h.01M19 12h.01']];
+let tab=location.hash.slice(1);if(!TABS.some(t=>t[0]==tab))tab='home';
+const FX=['Nausea','Fatigue','Headache','Constipation','Diarrhoea','Reduced appetite','Dizziness','Injection-site reaction'];
+const SITES=['Abdomen left','Abdomen right','Thigh left','Thigh right','Upper arm left','Upper arm right','Oral / other'];
+const fmtD=a=>new Date(a).toLocaleString([], {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+const fmtW=k=>D.unit=='lb'?(k*2.2046).toFixed(1)+' lb':k.toFixed(1)+' kg';
+const nowL=()=>{const d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,16)};
+const sorted=()=>[...D.entries].sort((a,b)=>a.at<b.at?-1:1);
+const trust=()=>`<div class="card"><h3>Why you can trust it</h3><ul style="margin:.4rem 0 0;padding-left:1.2rem"><li><b>Private by design.</b> No account, no server. Your entries stay on this device.</li><li><b>No doses, no sales.</b> It never tells you what to take, and nobody pays to be listed here.</li><li><b>Evidence first.</b> Every compound is labelled approved, investigational or unapproved.</li><li><b>Your data is yours.</b> Back it up or delete it any time from More.</li></ul></div>`;
+const row=x=>`<div class="row"><div><b>${esc(x.compound)}</b> · ${esc(x.dose)} ${esc(x.unit)}<div class="mut">${fmtD(x.at)}${x.site?' · '+esc(x.site):''}${x.source?' · batch '+esc(x.source):''}</div>${(x.fx||[]).length?`<div class="mut">Side effects: ${x.fx.map(esc).join(', ')}</div>`:''}${x.notes?`<div class="mut">${esc(x.notes)}</div>`:''}</div><button class="ghost" onclick="del('${esc(x.id)}',this)">Delete</button></div>`;
+const V={
+home(){
+ const e=D.entries;
+ if(!e.length)return `<section class="hero"><h1>Log it. Understand it. Stay safe.</h1><p>A private logbook for GLP-1 medicines and peptides, with plain-English evidence notes and a safety check-in. No account needed.</p><button class="btn" onclick="show('log')">Add your first entry</button></section>${trust()}`;
+ const s=sorted(),W=s.filter(x=>x.wkg),by={};s.forEach(x=>by[x.compound.toLowerCase()]=x);
+ const due=Object.values(by).filter(x=>x.repeat>0).map(x=>({x,d:Math.round((new Date(x.at).getTime()+x.repeat*864e5-Date.now())/864e5)})).sort((a,b)=>a.d-b.d);
+ const ch=W.length>1?W[W.length-1].wkg-W[0].wkg:null;
+ return `<h2 style="margin-top:6px">Today</h2><div class="stats"><div><b>${e.length}</b><span class="mut">entries</span></div><div><b>${W.length?fmtW(W[W.length-1].wkg):'—'}</b><span class="mut">latest weight</span></div><div><b>${ch==null?'—':(ch>0?'+':'')+(D.unit=='lb'?(ch*2.2046).toFixed(1):ch.toFixed(1))}</b><span class="mut">change (${D.unit})</span></div></div>
+ ${due.length?`<div class="card"><h3>Next doses</h3>${due.map(o=>`<div class="due"><span>${esc(o.x.compound)}</span><span class="pill ${o.d<0?'late':''}">${o.d<0?-o.d+(o.d==-1?' day':' days')+' overdue':o.d==0?'due today':'in '+o.d+(o.d==1?' day':' days')}</span></div>`).join('')}<div class="mut">Based on your repeat setting. Follow your prescriber or the label, not this app.</div></div>`:''}
+ <div class="card"><h3>Recent entries</h3>${[...s].reverse().slice(0,3).map(row).join('')}<button class="ghost" onclick="show('log')">Log another</button></div>
+ <div class="card"><h3>Not feeling right?</h3><p class="mut" style="margin:.3rem 0 .6rem">Check the warning signs that need urgent medical help.</p><button class="ghost warn" onclick="show('learn')">See warning signs</button></div>`},
+log(){
+ const sel=(a)=>a.map(o=>`<option>${esc(o)}</option>`).join('');
+ return `<h2>New entry</h2><form class="card" onsubmit="add(event)">
+ <label for="c">Compound</label><input id="c" name="c" list="cl" required autocomplete="off" placeholder="e.g. semaglutide"><datalist id="cl"><option>Semaglutide<option>Tirzepatide<option>Retatrutide<option>Orforglipron<option>BPC-157<option>TB-500<option>Other</datalist>
+ <div class="two"><div><label for="d">Dose</label><input id="d" name="d" type="number" step="any" min="0" required inputmode="decimal"></div><div><label for="u">Unit</label><select id="u" name="u">${sel(['mg','mcg','units','ml'])}</select></div></div>
+ <label for="a">Date and time</label><input id="a" name="a" type="datetime-local" value="${nowL()}" required>
+ <div class="two"><div><label for="s">Injection site</label><select id="s" name="s"><option value="">—</option>${sel(SITES)}</select></div><div><label for="r">Repeat every (days)</label><input id="r" name="r" type="number" min="0" inputmode="numeric" placeholder="e.g. 7"></div></div>
+ <div class="two"><div><label for="w">Weight (optional)</label><input id="w" name="w" type="number" step="any" min="0" inputmode="decimal"></div><div><label for="wu">Unit</label><select id="wu" name="wu"><option ${D.unit=='kg'?'selected':''}>kg</option><option ${D.unit=='lb'?'selected':''}>lb</option></select></div></div>
+ <label>Mood (1 low, 5 great)</label><div class="chips">${[1,2,3,4,5].map(n=>`<label><input type="radio" name="m" value="${n}"><span>${n}</span></label>`).join('')}</div>
+ <label>Side effects</label><div class="chips">${FX.map(f=>`<label><input type="checkbox" name="fx" value="${f}"><span>${f}</span></label>`).join('')}</div>
+ <label for="b">Source / batch (optional)</label><input id="b" name="b" autocomplete="off" placeholder="Pharmacy, brand or lot number">
+ <label for="n">Notes</label><textarea id="n" name="n" style="font-size:1rem;min-height:70px"></textarea>
+ <p style="margin:16px 0 0"><button class="btn" type="submit">Save entry</button></p></form>
+ <h2>History</h2><div class="card">${D.entries.length?[...sorted()].reverse().map(row).join(''):'<span class="mut">Nothing logged yet. Your entries will appear here.</span>'}</div>`},
+trends(){
+ const s=sorted(),W=s.filter(x=>x.wkg);let g='';
+ if(W.length<2)g='<span class="mut">Log weight on at least two entries to see your trend.</span>';
+ else{const xs=W.map(x=>+new Date(x.at)),ys=W.map(x=>x.wkg),x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys)-1,y1=Math.max(...ys)+1,px=t=>x1==x0?160:24+(t-x0)/(x1-x0)*272,py=v=>128-(v-y0)/(y1-y0)*108,P=W.map(x=>px(+new Date(x.at))+','+py(x.wkg));
+ g=`<svg viewBox="0 0 320 150" width="100%" role="img" aria-label="Weight over time"><polyline points="${P.join(' ')}" fill="none" stroke="var(--g)" stroke-width="2.500"/>${W.map(x=>`<circle cx="${px(+new Date(x.at))}" cy="${py(x.wkg)}" r="3.500" fill="var(--g)"/>`).join('')}<text x="4" y="14" font-size="11" fill="var(--mut)">${fmtW(Math.max(...ys))}</text><text x="4" y="146" font-size="11" fill="var(--mut)">${fmtW(Math.min(...ys))}</text></svg>`}
+ const T={};s.forEach(x=>(x.fx||[]).forEach(f=>T[f]=(T[f]||0)+1));const tk=Object.entries(T).sort((a,b)=>b[1]-a[1]),mx=tk.length?tk[0][1]:1;
+ const M=s.filter(x=>x.mood).slice(-14);
+ return `<h2 style="margin-top:6px">Trends</h2><div class="card"><h3>Weight</h3>${g}</div>
+ <div class="card"><h3>Side effects</h3>${tk.length?tk.map(([f,n])=>`<div class="bars"><span>${f}</span><span><div class="bar" style="width:${n/mx*100}%"></div></span><span>${n}</span></div>`).join(''):'<span class="mut">No side effects logged. That is useful to know too.</span>'}</div>
+ <div class="card"><h3>Mood, last ${M.length||14} entries</h3>${M.length?`<div class="mood">${M.map(x=>`<i style="height:${x.mood*20}%" title="${x.mood}"></i>`).join('')}</div>`:'<span class="mut">Add a mood score when you log to see it here.</span>'}</div>`},
+learn(){
+ const L=(t,b)=>`<details><summary>${t}</summary>${b}</details>`;
+ return `<h2 style="margin-top:6px">Learn</h2>
+ <div class="alert"><h3>Get urgent medical help for</h3><ul style="margin:.3rem 0 0;padding-left:1.2rem"><li>Severe, persistent belly pain, with or without vomiting (possible pancreatitis)</li><li>Upper right belly pain, fever, yellow skin or eyes (gallbladder or liver)</li><li>Swelling of face or throat, trouble breathing, widespread rash</li><li>Vomiting or diarrhoea that won’t stop, very little urine, fainting</li><li>Spreading redness, heat, pus or fever after an injection</li><li>Sudden vision loss or change</li><li>A neck lump, trouble swallowing, or a hoarse voice that persists</li><li>Shakiness, sweating, confusion if you also take diabetes medicines</li></ul></div>
+ <div class="card">${L('Peptide-maxing, honestly','<p class="mut">The compounds fall into three very different groups. The biggest mistake is treating them as one.</p><ul><li><b>Approved medicines</b> (semaglutide, tirzepatide, orforglipron): large human trials, known side effects, regulated manufacturing.</li><li><b>Investigational</b> (retatrutide): promising phase 3 data, not approved. Anything sold as it today is unverified.</li><li><b>Unapproved “research” peptides</b> (BPC-157, TB-500, most others): mostly animal or lab evidence, tiny or no human trials, variable quality.</li></ul>')}
+ ${L('How strong is the evidence?','<ul><li><b>Cell and animal studies:</b> interesting, often fail in humans.</li><li><b>Small uncontrolled human reports:</b> can’t separate the compound from placebo or natural recovery.</li><li><b>Randomised placebo-controlled trials:</b> the minimum for “it works”.</li><li><b>Large trials plus regulator review:</b> how approved GLP-1 medicines got there.</li></ul>')}
+ ${L('Regulatory snapshot (Oct 2026)','<ul><li>July 2026: an FDA advisory committee narrowly voted to recommend six peptides (BPC-157, KPV, TB-500, MOTS-c, Semax, Epitalon) for the 503A compounding list. This is advisory and non-binding; FDA staff had recommended against all seven considered. None is approved.</li><li>Retatrutide is not approved; Lilly has said it plans to file in early 2027.</li><li>Oral GLP-1s now approved: oral Wegovy and Foundayo (orforglipron).</li><li>India: semaglutide’s patent expired in March 2026 and CDSCO-approved generics launched for type 2 diabetes. Rules for unapproved peptides vary, so ask a doctor or pharmacist.</li></ul>')}
+ ${L('Quality: why “99% pure” isn’t enough','<ul><li>Independent testing found wide variation in purity and amount in “research-grade” peptides, and some endotoxin.</li><li>HPLC purity does not test sterility or endotoxin.</li><li>Certificates of analysis can be faked or reused across batches.</li><li>Log the source and lot of every vial so you can trace a bad reaction.</li></ul>')}
+ ${L('Injection hygiene','<ul><li>Wash hands. New sterile needle and syringe every time. Never share pens, needles or vials.</li><li>Rotate sites. Avoid red, hard, bruised or infected skin.</li><li>Cloudy, discoloured or clumpy solution: don’t use it.</li><li>Store as the label or pharmacist says. Use a sharps container.</li></ul>')}
+ ${L('Questions to ask a clinician','<ul><li>Is this right for my conditions, other medicines and any pregnancy plans?</li><li>Which blood tests do I need before and during?</li><li>How do I protect muscle and bone while losing weight?</li><li>What are my stop-and-call symptoms, and who do I call out of hours?</li></ul>')}
+ ${L('Sport and work rules','<p class="mut">WADA prohibits BPC-157 and TB-500, and growth-hormone-releasing peptides such as CJC-1295 and ipamorelin, at all times. Some militaries and employers also ban them.</p>')}</div>`},
+more(){
+ return `<h2 style="margin-top:6px">More</h2>
+ <div class="card"><h3>Weight unit</h3><div class="chips"><label><input type="radio" name="un" ${D.unit=='kg'?'checked':''} onchange="setU('kg')"><span>kg</span></label><label><input type="radio" name="un" ${D.unit=='lb'?'checked':''} onchange="setU('lb')"><span>lb</span></label></div></div>
+ <div class="card"><h3>Back up your data</h3><p class="mut">Entries live only in this browser on this device. Clearing browser data erases them. Copy this text and keep it somewhere safe.</p><textarea id="bk" readonly>${esc(JSON.stringify({app:'peptide-tracker',v:1,unit:D.unit,entries:D.entries}))}</textarea><p style="margin:10px 0 0"><button class="ghost" onclick="cp(this)">Copy backup</button></p></div>
+ <div class="card"><h3>Restore</h3><p class="mut">Paste a backup below. This replaces everything currently in the app.</p><textarea id="rs" placeholder="Paste backup text here"></textarea><p id="rm" class="mut" role="status"></p><button class="ghost" onclick="rest(this)">Restore from backup</button></div>
+ ${trust()}
+ <div class="card"><h3>About</h3><p class="mut">Built and maintained by <b>Dr. Darmi Patel</b>. Questions, corrections or feedback are welcome, and every message is read by a person.</p><a class="btn" style="display:inline-block;text-decoration:none" href="mailto:darmidarmi91@gmail.com?subject=Peptide%20Tracker">Email darmidarmi91@gmail.com</a></div>
+ <div class="card"><h3>Privacy</h3><p class="mut">Nothing you log is sent anywhere. There are no accounts, no analytics and no advertising. Data is stored only in this browser.</p><button class="ghost warn" onclick="wipe(this)">Delete all my data</button></div>
+ <div class="card"><h3>Not medical advice</h3><p class="mut">Peptide Tracker is a personal logbook and education resource. It doesn’t recommend doses, diagnose, or replace your prescriber, pharmacist or the product label. Don’t start, stop or change a prescribed medicine because of anything here.</p></div>`}
+};
+function render(){
+ $('#nav').innerHTML=TABS.map(t=>`<button onclick="show('${t[0]}')" ${t[0]==tab?'aria-current="page"':''}><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="${t[2]}"/></svg>${t[1]}</button>`).join('');
+ $('#app').innerHTML=V[tab]()+(tab=='more'?'':'<p class="fine">Education and record-keeping only, not medical advice. Built by Dr. Darmi Patel, <a href="mailto:darmidarmi91@gmail.com" style="color:inherit">darmidarmi91@gmail.com</a>.</p>');
+}
+function show(t){tab=t;render();scrollTo(0,0)}
+function add(ev){ev.preventDefault();const f=ev.target,v=n=>f.elements[n].value.trim(),w=parseFloat(v('w')),u=v('wu'),m=f.querySelector('input[name=m]:checked');
+ if(!v('c')||!(parseFloat(v('d'))>=0)||!v('d')){return}
+ D.entries.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),compound:v('c'),dose:v('d'),unit:v('u'),at:v('a'),site:v('s'),repeat:parseInt(v('r'))||0,wkg:isNaN(w)?null:(u=='lb'?w/2.2046:w),mood:m?+m.value:null,fx:[...f.querySelectorAll('input[name=fx]:checked')].map(i=>i.value),source:v('b'),notes:v('n')});
+ if(!isNaN(w)){D.unit=u}
+ save();show('home')}
+function del(id,b){if(!b.dataset.s){b.dataset.s=1;b.textContent='Tap to confirm';b.classList.add('warn');return}D.entries=D.entries.filter(x=>x.id!=id);save();render()}
+function setU(u){D.unit=u;save()}
+function cp(b){const t=$('#bk');t.select();try{navigator.clipboard.writeText(t.value)}catch(e){}try{document.execCommand('copy')}catch(e){}b.textContent='Copied'}
+function rest(b){const m=$('#rm');let o;try{o=JSON.parse($('#rs').value)}catch(e){m.textContent='That isn’t valid backup text. Copy the whole text from the old backup and try again.';return}
+ const a=Array.isArray(o)?o:o&&o.entries;if(!Array.isArray(a)||!a.length){m.textContent='No entries found in that backup.';return}
+ if(!b.dataset.s){b.dataset.s=1;b.textContent='Tap to confirm replace';b.classList.add('warn');m.textContent=a.length+' entries found.';return}
+ D={unit:o.unit=='lb'?'lb':'kg',entries:a.filter(x=>x&&x.compound).map((x,i)=>({id:x.id||Date.now().toString(36)+i,compound:String(x.compound),dose:x.dose??'',unit:x.unit||'mg',at:x.at||x.date||nowL(),site:x.site||'',repeat:+x.repeat||0,wkg:x.wkg??null,mood:x.mood||null,fx:Array.isArray(x.fx)?x.fx:(Array.isArray(x.effects)?x.effects:[]),source:x.source||'',notes:x.notes||''}))};
+ save();show('home')}
+function wipe(b){if(!b.dataset.s){b.dataset.s=1;b.textContent='Tap again to delete everything';return}D={entries:[],unit:'kg'};save();show('home')}
+render();
+</script></body></html>
