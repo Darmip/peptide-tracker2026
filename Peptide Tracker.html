@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Peptide Tracker</title>
+<style>
+:root{--bg:#f6f3e8;--card:#fffdf6;--ink:#1f2a22;--mut:#5d6b60;--g:#2f6b4a;--g2:#dcebd9;--line:#e1dcc8;--warn:#b4532a;--warnbg:#fbe9df;--amb:#8a6a10;--ambbg:#f8efc8;--blu:#245a7a;--blubg:#dcebf3;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121a15;--card:#1a251e;--ink:#e8efe6;--mut:#9fb0a2;--g:#6fbf8e;--g2:#25392c;--line:#2b3a30;--warn:#f0a07a;--warnbg:#3a241a;--amb:#e8cd6a;--ambbg:#3a3215;--blu:#8cc3e0;--blubg:#1b3140}}
+:root[data-theme="dark"]{--bg:#121a15;--card:#1a251e;--ink:#e8efe6;--mut:#9fb0a2;--g:#6fbf8e;--g2:#25392c;--line:#2b3a30;--warn:#f0a07a;--warnbg:#3a241a;--amb:#e8cd6a;--ambbg:#3a3215;--blu:#8cc3e0;--blubg:#1b3140}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{padding:18px 16px 8px;max-width:760px;margin:0 auto}
+h1{margin:0;font:700 1.5rem Georgia,"Times New Roman",serif;color:var(--g)}
+header p{margin:2px 0 0;color:var(--mut);font-size:.9rem}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;gap:6px;overflow-x:auto;padding:8px 16px;max-width:760px;margin:0 auto;border-bottom:1px solid var(--line)}
+nav button{flex:0 0 auto;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:99px;font:inherit;font-size:.9rem;cursor:pointer}
+nav button.on{background:var(--g);color:var(--bg);border-color:var(--g);font-weight:600}
+main{max-width:760px;margin:0 auto;padding:12px 16px 60px}
+section{display:none}section.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:0 0 12px}
+h2{font:700 1.1rem Georgia,serif;margin:0 0 8px;color:var(--g)}
+label{display:block;font-size:.8rem;color:var(--mut);margin:10px 0 3px}
+input,select,textarea{width:100%;font:inherit;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+.row{display:flex;gap:8px}.row>*{flex:1;min-width:0}
+.btn{background:var(--g);color:var(--bg);border:0;padding:11px 16px;border-radius:10px;font:inherit;font-weight:600;cursor:pointer;margin-top:12px}
+.btn.s{background:var(--g2);color:var(--g)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.chip{border:1px solid var(--line);border-radius:99px;padding:5px 11px;font-size:.85rem;cursor:pointer;background:var(--bg);color:var(--ink);user-select:none}
+.chip.on{background:var(--g2);border-color:var(--g);color:var(--g);font-weight:600}
+.tag{display:inline-block;font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:99px;margin-right:4px}
+.t-ok{background:var(--g2);color:var(--g)}.t-inv{background:var(--blubg);color:var(--blu)}.t-un{background:var(--warnbg);color:var(--warn)}.t-am{background:var(--ambbg);color:var(--amb)}
+.mut{color:var(--mut);font-size:.88rem}
+.warn{background:var(--warnbg);border-left:4px solid var(--warn);padding:10px 12px;border-radius:8px;font-size:.9rem;margin:0 0 12px}
+.info{background:var(--blubg);border-left:4px solid var(--blu);padding:10px 12px;border-radius:8px;font-size:.9rem;margin:0 0 12px}
+.ent{border-top:1px solid var(--line);padding:10px 0}.ent:first-of-type{border-top:0}
+.ent b{color:var(--g)}
+.x{float:right;background:none;border:0;color:var(--mut);cursor:pointer;font-size:1.1rem}
+details{border-top:1px solid var(--line);padding:8px 0}details:first-of-type{border-top:0}
+summary{cursor:pointer;font-weight:600}
+ul{margin:6px 0 6px 18px;padding:0}li{margin:3px 0}
+.bar{height:10px;background:var(--g);border-radius:5px}
+.srch{margin-bottom:10px}
+svg{max-width:100%;height:auto}
+a{color:var(--g);font-weight:600}.lib-h{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+</style>
+</head>
+<body>
+<header>
+<h1>Peptide Tracker</h1>
+<p>Log it. Understand it. Stay safe. Free, private, no account.</p>
+</header>
+<nav id="nav"></nav>
+<main>
+
+<section id="log">
+<div id="nextbox"></div>
+<div class="card">
+<h2>New entry</h2>
+<label>Compound</label>
+<select id="cmp"></select>
+<input id="cust" placeholder="Custom name" style="display:none;margin-top:6px">
+<div class="row"><div><label>Dose</label><input id="dose" type="number" step="any" inputmode="decimal"></div>
+<div><label>Unit</label><select id="unit"><option>mg</option><option>mcg</option><option>units</option><option>ml</option></select></div></div>
+<label>Date and time</label><input id="dt" type="datetime-local">
+<div class="row"><div><label>Injection site</label><select id="site"><option value="">—</option><option>Abdomen left</option><option>Abdomen right</option><option>Thigh left</option><option>Thigh right</option><option>Upper arm left</option><option>Upper arm right</option><option>Oral / other</option></select></div>
+<div><label>Repeat every (days)</label><input id="rep" type="number" min="0" inputmode="numeric" placeholder="optional"></div></div>
+<div class="row"><div><label>Weight (optional)</label><input id="wt" type="number" step="any" inputmode="decimal"></div>
+<div><label>Unit</label><select id="wu"><option>kg</option><option>lb</option></select></div></div>
+<label>Mood</label><div class="chips" id="moods"></div>
+<label>Side effects</label><div class="chips" id="ses"></div>
+<label>Source / batch (optional)</label><input id="src" placeholder="Pharmacy or seller, lot no., certificate of analysis (COA) seen? Y/N">
+<label>Notes</label><textarea id="note" rows="2"></textarea>
+<button class="btn" id="save">Save entry</button>
+</div>
+<div class="card"><h2>History</h2><div id="hist"></div></div>
+</section>
+
+<section id="prog">
+<div class="card"><h2>Weight</h2><div id="wchart"></div></div>
+<div class="card"><h2>Side effects</h2><div id="sefx"></div></div>
+<div class="card"><h2>Mood</h2><div id="mchart"></div></div>
+<div class="card"><h2>Summary</h2><div id="sum"></div></div>
+</section>
+
+<section id="lib">
+<div class="warn"><b>How to read this.</b> Status is as of October 2026 and mainly reflects the US FDA. Rules differ by country. This is education, not advice: it deliberately gives no doses. For approved medicines follow your prescriber and the product label.</div>
+<input class="srch" id="q" placeholder="Search compounds…">
+<div class="chips" id="lf" style="margin-bottom:10px"></div>
+<div id="libl"></div>
+</section>
+
+<section id="learn">
+<div class="card"><h2>Peptide-maxing, honestly</h2>
+<p>“Peptide-maxing” means stacking injectable peptides for fat loss, recovery, looks, sleep or longevity. The compounds fall into three very different groups, and the biggest mistake is treating them as one.</p>
+<ul><li><b>Approved medicines</b> (semaglutide, tirzepatide, orforglipron): large human trials, known side effects, regulated manufacturing.</li>
+<li><b>Investigational</b> (retatrutide): promising phase 3 data, not approved. Anything sold as it today is unverified.</li>
+<li><b>Unapproved “research” peptides</b> (BPC-157, TB-500, most others): mostly animal or lab evidence, tiny or no human trials, variable quality.</li></ul></div>
+<div class="card"><h2>Learn</h2>
+<details open><summary>Evidence ladder: what counts</summary>
+<ul><li><b>Cell/animal studies</b>: interesting, often fail in humans.</li><li><b>Small uncontrolled human reports</b>: can’t separate the compound from placebo, natural recovery and regression to the mean.</li><li><b>Randomised placebo-controlled trials</b>: the minimum for “it works”.</li><li><b>Large trials plus regulator review</b>: how approved GLP-1 medicines got there.</li></ul>
+<p class="mut">Example: only three small, uncontrolled human studies of BPC-157 had been identified in a 2026 university review; most of its evidence is from rats.</p></details>
+<details><summary>Regulatory snapshot (US, Oct 2026)</summary>
+<ul><li>July 23–24, 2026: an FDA advisory committee voted narrowly (BPC-157 8–6) to recommend six peptides for the 503A compounding list: BPC-157, KPV, TB-500, MOTS-c, Semax, Epitalon. It rejected emideltide (DSIP).</li>
+<li>These are <b>advisory, non-binding</b>. FDA’s own staff had recommended against all seven. Formal rulemaking has to follow, so none is approved and a vote is not approval of any use or dose.</li>
+<li>Retatrutide is not approved; Lilly has said it plans to file in early 2027.</li>
+<li>Oral GLP-1s now approved: oral Wegovy (semaglutide 25 mg, Dec 2025) and Foundayo (orforglipron, Apr 2026).</li>
+<li>India: semaglutide’s patent expired on 20 March 2026 and many CDSCO-approved generics launched for type 2 diabetes. I couldn’t verify India’s rules for each unapproved peptide, so ask a qualified doctor or pharmacist.</li></ul></details>
+<details><summary>Quality: why “99% pure” isn’t enough</summary>
+<ul><li>Independent testing and a 2026 preprint found wide variability in purity and amount in “research-grade” peptides; some vials had far less than labelled and some showed endotoxin.</li>
+<li>HPLC purity does <b>not</b> test sterility or endotoxin. Those are separate tests.</li>
+<li>Certificates of analysis can be faked or copied between batches. Compounded products from a licensed pharmacy are not the same as gray-market “research use only” vials.</li>
+<li>Log the source and lot of every vial here so you can trace a bad reaction.</li></ul></details>
+<details><summary>Injection hygiene basics</summary>
+<ul><li>Wash hands, use a new sterile needle and syringe every time, never share pens, needles or vials.</li>
+<li>Rotate injection sites. Don’t inject into red, hard, bruised or infected skin.</li>
+<li>Cloudy, discoloured or clumpy solution: don’t use it.</li>
+<li>Store exactly as the label or pharmacist says. Use a sharps container.</li></ul></details>
+<details><summary>Questions to ask a clinician</summary>
+<ul><li>Is this right for my health conditions, other medicines and any pregnancy plans?</li>
+<li>Which blood tests should I have before and during (e.g. kidney, liver, lipids, HbA1c, thyroid history)?</li>
+<li>How do I protect muscle and bone while losing weight (protein, strength training)?</li>
+<li>What are my stop-and-call symptoms? Who do I call out of hours?</li></ul></details>
+<details><summary>Sport and work rules</summary>
+<p>WADA prohibits BPC-157 (non-approved substances) and TB-500 (S2), and growth-hormone-releasing peptides such as CJC-1295 and ipamorelin, at all times. Some militaries and employers also ban them.</p></details>
+</div>
+</section>
+
+<section id="safe">
+<div class="warn"><b>Get urgent medical help for:</b>
+<ul><li>Severe, persistent belly pain, with or without vomiting (possible pancreatitis)</li>
+<li>Pain in the upper right belly, fever, yellow skin or eyes (gallbladder or liver)</li>
+<li>Swelling of face or throat, trouble breathing, widespread rash</li>
+<li>Vomiting or diarrhoea that won’t stop, very little urine, fainting (dehydration)</li>
+<li>Spreading redness, heat, pus or fever after an injection</li>
+<li>Sudden vision loss or change</li>
+<li>A lump in the neck, trouble swallowing, or a hoarse voice that persists</li>
+<li>Shakiness, sweating, confusion if you also take diabetes medicines (low blood sugar)</li></ul></div>
+<div class="card"><h2>Check-in</h2>
+<p class="mut">Tick what applies today. This is a prompt to talk to a professional, not a diagnosis.</p>
+<div class="chips" id="rf"></div><div id="rfout" style="margin-top:10px"></div></div>
+<div class="card"><h2>Not medical advice</h2><p class="mut">Peptide Tracker is a personal logbook and education resource. It doesn’t recommend doses, diagnose, or replace your prescriber, pharmacist or the product label. Don’t start, stop or change a prescribed medicine because of anything here.</p></div>
+</section>
+
+<section id="data">
+<div class="card"><h2>Back up your data</h2>
+<p class="mut">Entries live only in this browser on this device. Clearing browser data erases them. Copy the backup text and keep it somewhere safe (notes app, email to yourself).</p>
+<textarea id="bk" rows="4" readonly></textarea>
+<button class="btn" id="cp">Copy backup text</button></div>
+<div class="card"><h2>Restore</h2><p class="mut">Restoring replaces everything currently in the app.</p>
+<textarea id="rs" rows="4" placeholder="Paste backup text"></textarea>
+<button class="btn s" id="rb">Restore from backup</button><p id="rmsg" class="mut"></p></div>
+<div class="card"><h2>Privacy</h2><p class="mut">No account and no server. Nothing you log is sent anywhere. It is stored only in this browser.</p>
+<button class="btn s" id="clr">Delete all my data</button></div>
+</section>
+</main>
+
+<script>
+(function(){
+var K='pt_v2',S={e:[]};
+function load(){try{var r=localStorage.getItem(K);if(r){var o=JSON.parse(r);if(o&&Array.isArray(o.e))S=o}}catch(x){}}
+function save(){try{localStorage.setItem(K,JSON.stringify(S))}catch(x){}}
+load();
+var $=function(i){return document.getElementById(i)};
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+
+var LIB=[
+{n:'Semaglutide',g:'GLP-1',st:'ok',stt:'FDA-approved',ev:'Strong: large RCTs',s:'GLP-1 agonist (Ozempic, Wegovy, Rybelsus; oral Wegovy 25 mg approved Dec 2025). Reduces appetite and slows gastric emptying. Generics launched in India after the 20 Mar 2026 patent expiry, approved there for type 2 diabetes.',r:'Nausea, vomiting, diarrhoea, constipation, reflux. Pancreatitis, gallbladder disease, dehydration and kidney injury are known risks. Boxed warning for thyroid C-cell tumours (seen in rodents). Weight lost includes some lean mass.'},
+{n:'Tirzepatide',g:'GLP-1',st:'ok',stt:'FDA-approved',ev:'Strong: large RCTs',s:'GIP + GLP-1 dual agonist (Mounjaro, Zepbound) with the strongest head-to-head weight-loss evidence among approved options.',r:'Similar GI effects and warnings to semaglutide. Can reduce the effectiveness of oral contraceptives, especially after starting and after dose increases: ask your prescriber.'},
+{n:'Orforglipron (Foundayo)',g:'GLP-1',st:'ok',stt:'FDA-approved (Apr 2026)',ev:'Strong: phase 3 RCTs',s:'First non-peptide, small-molecule oral GLP-1 for weight management; taken without food or water restrictions. Approved in the UK in Aug 2026.',r:'Mostly GI: nausea, vomiting, diarrhoea, constipation. About 4% of those with side effects had severe nausea or vomiting in trials.'},
+{n:'Liraglutide',g:'GLP-1',st:'ok',stt:'FDA-approved',ev:'Strong: long track record',s:'Daily GLP-1 agonist (Victoza, Saxenda). Older, modest effect compared with newer options.',r:'GI effects, pancreatitis and gallbladder warnings, thyroid C-cell warning.'},
+{n:'Retatrutide',g:'GLP-1',st:'inv',stt:'Investigational',ev:'Phase 3 reported',s:'Weekly GIP + GLP-1 + glucagon triple agonist from Lilly. Phase 3 (TRIUMPH) results published in 2026. Not submitted to FDA yet; filing planned for early 2027. Limited expanded access only since Aug 2026.',r:'GI effects rise with dose. Abnormal skin sensation (dysesthesia) reported in about a fifth of people at 12 mg. Long-term safety unknown. Products sold online as “retatrutide” are unapproved with unverified contents; FDA says it can’t legally be compounded.'},
+{n:'BPC-157',g:'Recovery',st:'un',stt:'Not approved',ev:'Mostly animal; 3 small uncontrolled human studies',s:'15-amino-acid synthetic peptide promoted for tendon, gut and tissue healing. Rodent data is extensive; human trials are essentially absent. FDA reviewers said it is not well characterised. Advisory panel voted 8–6 (Jul 2026) to recommend the 503A list; this is not approval.',r:'FDA flagged immune reactions and impurity/clumping concerns; adverse reports include injection-site swelling and shortness of breath. Theoretical concern over its effect on blood-vessel growth in people with cancer risk is unresolved. WADA-prohibited.'},
+{n:'TB-500',g:'Recovery',st:'un',stt:'Not approved',ev:'Animal / lab; no human study of TB-500 itself',s:'Synthetic fragment of thymosin beta-4. FDA’s 2026 review found wound-healing studies used the full protein and no human study gave TB-500 itself. Panel recommended the 503A list in Jul 2026 (advisory).',r:'Injection-site reaction, fatigue, head rush reported. FDA found no human exposure data or animal toxicology programme. WADA-prohibited (S2).'},
+{n:'GHK-Cu',g:'Skin / other',st:'un',stt:'Not approved (injectable)',ev:'Limited: lab and mouse data',s:'Copper peptide promoted for skin, collagen and hair. Evidence is mostly cell and animal work.',r:'Injectable human safety data is thin; quality varies by source.'},
+{n:'CJC-1295 / Ipamorelin',g:'GH axis',st:'un',stt:'Not approved',ev:'Limited human data',s:'Growth-hormone-releasing peptides, often stacked for sleep, recovery and body composition. Named in a 2026 Health Canada warning on unauthorised injectables.',r:'Raises GH and IGF-1; long-term effects of that in healthy adults are unknown. Water retention, numbness and tingling, glucose changes. WADA-prohibited.'},
+{n:'KPV',g:'Inflammation',st:'un',stt:'Not approved',ev:'Preclinical',s:'Tripeptide fragment of α-MSH studied for inflammation. Advisory panel recommended 503A list in Jul 2026 (8–6).',r:'Human safety and dosing data are largely lacking.'},
+{n:'MOTS-c',g:'Metabolic',st:'un',stt:'Not approved',ev:'Preclinical / early human',s:'Mitochondria-derived peptide studied for metabolism and exercise capacity. Advisory panel recommended 503A list (7–5).',r:'Little human safety data.'},
+{n:'Semax',g:'Nootropic',st:'un',stt:'Not approved in US',ev:'Limited, mostly non-US studies',s:'Synthetic ACTH-fragment peptide used clinically in some countries for neurological conditions. Advisory panel recommended 503A list (8–5).',r:'Limited high-quality human evidence in healthy users.'},
+{n:'Epitalon',g:'Longevity',st:'un',stt:'Not approved',ev:'Preclinical / small studies',s:'Tetrapeptide marketed for ageing and telomeres. Advisory panel recommended 503A list (7–5).',r:'Claims about lifespan are unproven in humans.'},
+{n:'Melanotan II',g:'Tanning',st:'un',stt:'Not approved',ev:'Limited',s:'Tanning peptide sold online. Regulators in several countries have warned against it.',r:'Nausea, flushing, and concern about new or changing moles and skin cancer risk. Have any skin changes checked.'},
+{n:'PT-141 (bremelanotide)',g:'Sexual health',st:'ok',stt:'Approved as Vyleesi (US)',ev:'RCTs for approved use',s:'Approved for hypoactive sexual desire disorder in premenopausal women. “Research” PT-141 is a different regulatory category.',r:'Nausea, flushing, transient blood-pressure rise. Not suitable with uncontrolled hypertension or cardiovascular disease.'}
+];
+var CMPS=LIB.map(function(x){return x.n});
+var MOODS=['Great','Good','Okay','Low','Rough'];
+var SES=['Nausea','Vomiting','Diarrhoea','Constipation','Reflux','Low appetite','Fatigue','Headache','Dizziness','Injection-site reaction','Sleep issues','Hair shedding','Tingling'];
+var RF=['Severe belly pain','Persistent vomiting','Can’t keep fluids down','Yellow skin or eyes','Swelling of face or throat','Redness, heat or pus at injection site','Sudden vision change','Fainting or confusion','Neck lump or trouble swallowing'];
+
+var tabs=[['log','Log'],['prog','Progress'],['lib','Library'],['learn','Learn'],['safe','Safety'],['data','Backup']];
+function show(id){
+ for(var i=0;i<tabs.length;i++){$(tabs[i][0]).className=tabs[i][0]===id?'on':''}
+ var b=$('nav').children;for(var j=0;j<b.length;j++){b[j].className=b[j].dataset.t===id?'on':''}
+ if(id==='prog')prog();if(id==='data')$('bk').value=JSON.stringify(S);
+ try{window.scrollTo(0,0)}catch(x){}
+ if(/^[A-Za-z0-9_~.-]+$/.test(id)){try{history.replaceState(null,'','#'+id)}catch(x){}}
+}
+tabs.forEach(function(t){var b=document.createElement('button');b.textContent=t[1];b.dataset.t=t[0];b.onclick=function(){show(t[0])};$('nav').appendChild(b)});
+
+var cmpEl=$('cmp');
+cmpEl.innerHTML=CMPS.map(function(c){return '<option>'+esc(c)+'</option>'}).join('')+'<option value="__c">Other / custom…</option>';
+cmpEl.onchange=function(){$('cust').style.display=cmpEl.value==='__c'?'block':'none'};
+
+var mood='',ses={};
+function chips(el,list,multi){
+ el.innerHTML='';
+ list.forEach(function(t){var c=document.createElement('span');c.className='chip';c.textContent=t;c.onclick=function(){
+  if(multi){ses[t]=!ses[t];c.className='chip'+(ses[t]?' on':'')}
+  else{mood=mood===t?'':t;[].forEach.call(el.children,function(k){k.className='chip'+(k.textContent===mood?' on':'')})}};
+  el.appendChild(c)});
+}
+chips($('moods'),MOODS,false);chips($('ses'),SES,true);
+
+function nowLocal(){var d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,16)}
+$('dt').value=nowLocal();
+
+$('save').onclick=function(){
+ var name=cmpEl.value==='__c'?$('cust').value.trim():cmpEl.value;
+ if(!name){alert('Choose or type a compound.');return}
+ var w=parseFloat($('wt').value),dose=parseFloat($('dose').value);
+ var e={id:Date.now()+''+Math.floor(Math.random()*1000),t:new Date($('dt').value||Date.now()).getTime(),c:name,d:isNaN(dose)?null:dose,u:$('unit').value,site:$('site').value,rep:parseInt($('rep').value)||0,w:isNaN(w)?null:w,wu:$('wu').value,m:mood,se:Object.keys(ses).filter(function(k){return ses[k]}),src:$('src').value.trim(),n:$('note').value.trim()};
+ S.e.push(e);save();
+ $('dose').value='';$('wt').value='';$('note').value='';$('src').value='';mood='';ses={};chips($('moods'),MOODS,false);chips($('ses'),SES,true);$('dt').value=nowLocal();
+ renderLog();
+};
+
+function fmt(t){var d=new Date(t);return d.toLocaleDateString(undefined,{day:'numeric',month:'short'})+' '+d.toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit'})}
+function icsT(t){return new Date(t).toISOString().replace(/[-:]/g,'').slice(0,15)+'Z'}
+function calUrl(n){var s=n.t,r=n.rep*864e5;while(s<Date.now())s+=r;return 'https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent('Dose: '+n.c)+'&details='+encodeURIComponent('Logged in Peptide Tracker. Check your prescriber or the label for the dose.')+'&dates='+icsT(s)+'/'+icsT(s+9e5)+'&recur='+encodeURIComponent('RRULE:FREQ=DAILY;INTERVAL='+n.rep)}
+var notified={};
+function canN(){return typeof Notification!=='undefined'}
+document.addEventListener('click',function(ev){if(ev.target&&ev.target.id==='alertbtn'&&canN()){try{Notification.requestPermission().then(function(){renderLog()})}catch(x){}}});
+setInterval(function(){if(!canN()||Notification.permission!=='granted')return;var last={};S.e.forEach(function(e){if(e.rep>0&&(!last[e.c]||e.t>last[e.c].t))last[e.c]=e});Object.keys(last).forEach(function(k){var due=last[k].t+last[k].rep*864e5,key=k+due;if(due<=Date.now()&&due>Date.now()-864e5&&!notified[key]){notified[key]=1;try{new Notification('Dose due: '+k)}catch(x){}}})},60000);
+function renderLog(){
+ var es=S.e.slice().sort(function(a,b){return b.t-a.t});
+ $('hist').innerHTML=es.length?es.map(function(e){
+  return '<div class="ent"><button class="x" data-id="'+e.id+'" aria-label="Delete entry">×</button><b>'+esc(e.c)+'</b>'+(e.d!=null?' · '+e.d+' '+esc(e.u):'')+'<br><span class="mut">'+fmt(e.t)+(e.site?' · '+esc(e.site):'')+(e.w!=null?' · '+e.w+' '+esc(e.wu):'')+(e.m?' · mood: '+esc(e.m):'')+'</span>'+(e.se.length?'<br><span class="mut">Side effects: '+esc(e.se.join(', '))+'</span>':'')+(e.src?'<br><span class="mut">Source: '+esc(e.src)+'</span>':'')+(e.n?'<br>'+esc(e.n):'')+'</div>'}).join(''):'<p class="mut">No entries yet.</p>';
+ [].forEach.call($('hist').querySelectorAll('.x'),function(b){b.onclick=function(){if(confirm('Delete this entry?')){S.e=S.e.filter(function(e){return e.id!==b.dataset.id});save();renderLog()}}});
+ var last={};S.e.forEach(function(e){if(e.rep>0&&(!last[e.c]||e.t>last[e.c].t))last[e.c]=e});
+ var nx=Object.keys(last).map(function(k){var e=last[k];return{c:k,t:e.t+e.rep*864e5,rep:e.rep}}).sort(function(a,b){return a.t-b.t});
+ $('nextbox').innerHTML=nx.length?'<div class="card"><h2>Next doses</h2>'+nx.map(function(n){var od=n.t<Date.now();return '<div class="ent"><b>'+esc(n.c)+'</b> · '+fmt(n.t)+(od?' <span class="tag t-un">overdue</span>':'')+' · <a href="'+calUrl(n)+'" target="_blank" rel="noopener">Add to calendar</a></div>'}).join('')+'<p class="mut">'+(canN()&&Notification.permission==='granted'?'In-app alerts are on while this app is open. ':(canN()&&Notification.permission!=='denied'?'<button class="btn s" id="alertbtn" style="margin:0 8px 0 0">Turn on in-app alerts</button> ':''))+'For alerts when your phone is locked, use “Add to calendar” to make a repeating event with an alarm.</p></div>':'<div class="card"><h2>Next doses</h2><p class="mut">Add “repeat every (days)” to an entry to see upcoming doses here.</p></div>';
+}
+
+function wkg(e){return e.w==null?null:(e.wu==='lb'?e.w*0.45359237:e.w)}
+function prog(){
+ var ws=S.e.filter(function(e){return e.w!=null}).sort(function(a,b){return a.t-b.t});
+ if(ws.length<2){$('wchart').innerHTML='<p class="mut">Log at least two weights to see the chart.</p>'}
+ else{
+  var v=ws.map(wkg),mn=Math.min.apply(0,v),mx=Math.max.apply(0,v),pad=(mx-mn)||1,W=320,H=150,t0=ws[0].t,t1=ws[ws.length-1].t||1,sp=(t1-t0)||1;
+  var pts=ws.map(function(e,i){return [(10+(e.t-t0)/sp*(W-20)).toFixed(1),(H-20-((v[i]-mn)/pad)*(H-40)).toFixed(1)]});
+  $('wchart').innerHTML='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Weight over time"><polyline fill="none" stroke="var(--g)" stroke-width="2.5" points="'+pts.map(function(p){return p.join(',')}).join(' ')+'"/>'+pts.map(function(p){return '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="3.5" fill="var(--g)"/>'}).join('')+'<text x="10" y="12" font-size="10" fill="var(--mut)">'+mx.toFixed(1)+' kg</text><text x="10" y="'+(H-4)+'" font-size="10" fill="var(--mut)">'+mn.toFixed(1)+' kg</text></svg><p class="mut">Change: '+(v[v.length-1]-v[0]>0?'+':'')+(v[v.length-1]-v[0]).toFixed(1)+' kg since '+new Date(t0).toLocaleDateString()+'. Shown in kg.</p>';
+ }
+ var cnt={};S.e.forEach(function(e){e.se.forEach(function(s){cnt[s]=(cnt[s]||0)+1})});
+ var ks=Object.keys(cnt).sort(function(a,b){return cnt[b]-cnt[a]}),top=ks.length?cnt[ks[0]]:1;
+ $('sefx').innerHTML=ks.length?ks.map(function(k){return '<div style="margin:6px 0"><div class="mut">'+esc(k)+' · '+cnt[k]+'</div><div class="bar" style="width:'+Math.max(6,cnt[k]/top*100)+'%"></div></div>'}).join(''):'<p class="mut">Nothing logged yet.</p>';
+ var mc={};S.e.forEach(function(e){if(e.m)mc[e.m]=(mc[e.m]||0)+1});
+ $('mchart').innerHTML=Object.keys(mc).length?MOODS.map(function(m){return mc[m]?'<span class="tag t-ok">'+m+' · '+mc[m]+'</span>':''}).join(''):'<p class="mut">Nothing logged yet.</p>';
+ var by={};S.e.forEach(function(e){by[e.c]=(by[e.c]||0)+1});
+ var days=S.e.length?Math.max(1,Math.round((Date.now()-Math.min.apply(0,S.e.map(function(e){return e.t})))/864e5)):0;
+ $('sum').innerHTML=S.e.length?'<p>'+S.e.length+' entries over '+days+' day'+(days===1?'':'s')+'.</p>'+Object.keys(by).map(function(k){return '<div class="mut">'+esc(k)+': '+by[k]+'</div>'}).join(''):'<p class="mut">Log an entry to see your summary.</p>';
+}
+
+var filt='All',GS=['All','GLP-1','Recovery','GH axis','Other'];
+function renderLib(){
+ $('lf').innerHTML='';
+ GS.forEach(function(g){var c=document.createElement('span');c.className='chip'+(g===filt?' on':'');c.textContent=g;c.onclick=function(){filt=g;renderLib()};$('lf').appendChild(c)});
+ var q=$('q').value.toLowerCase();
+ var rows=LIB.filter(function(x){var gm=filt==='All'||x.g===filt||(filt==='Other'&&['GLP-1','Recovery','GH axis'].indexOf(x.g)<0);return gm&&(x.n+' '+x.s+' '+x.g).toLowerCase().indexOf(q)>-1});
+ $('libl').innerHTML=rows.map(function(x){
+  var cls=x.st==='ok'?'t-ok':x.st==='inv'?'t-inv':'t-un';
+  return '<div class="card"><div class="lib-h"><h2 style="margin:0">'+esc(x.n)+'</h2><span class="mut">'+esc(x.g)+'</span></div><div style="margin:6px 0"><span class="tag '+cls+'">'+esc(x.stt)+'</span><span class="tag t-am">Evidence: '+esc(x.ev)+'</span></div><p>'+esc(x.s)+'</p><p><b>Risks:</b> '+esc(x.r)+'</p></div>'}).join('')||'<p class="mut">No matches.</p>';
+}
+$('q').oninput=renderLib;
+
+var rf={};
+function renderRf(){
+ $('rf').innerHTML='';
+ RF.forEach(function(t){var c=document.createElement('span');c.className='chip'+(rf[t]?' on':'');c.textContent=t;c.onclick=function(){rf[t]=!rf[t];renderRf()};$('rf').appendChild(c)});
+ var n=RF.filter(function(t){return rf[t]}).length;
+ $('rfout').innerHTML=n?'<div class="warn"><b>Don’t wait for the app.</b> Pause your next dose and contact a doctor, pharmacist or emergency services now, especially for belly pain, swelling, trouble breathing, fainting or signs of infection. Tell them everything you’ve taken, including the source and lot from your log.</div>':'';
+}
+
+$('cp').onclick=function(){var t=$('bk');t.value=JSON.stringify(S);t.select();var ok=false;try{ok=document.execCommand('copy')}catch(x){}
+ try{if(navigator.clipboard)navigator.clipboard.writeText(t.value)}catch(x){}
+ $('cp').textContent=ok?'Copied':'Select the text above and copy it'};
+$('rb').onclick=function(){
+ try{var o=JSON.parse($('rs').value.trim());if(!o||!Array.isArray(o.e))throw 0;if(!confirm('Replace everything currently in the app?'))return;S=o;save();renderLog();$('rmsg').textContent='Restored '+S.e.length+' entries.'}catch(x){$('rmsg').textContent='That doesn’t look like valid backup text.'}};
+$('clr').onclick=function(){if(confirm('Delete every entry on this device? This can’t be undone.')){S={e:[]};save();renderLog();$('bk').value=JSON.stringify(S)}};
+
+renderLog();renderLib();renderRf();
+var h=(location.hash||'').slice(1);show(tabs.some(function(t){return t[0]===h})?h:'log');
+})();
+</script>
+</body>
+</html>
